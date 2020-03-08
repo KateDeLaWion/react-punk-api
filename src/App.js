@@ -1,8 +1,5 @@
 
-
-import React from 'react';
-import './App.css';
-import ContactForm from './components/ContactForm';
+import React, { Component } from 'react';
 import { 
   BrowserRouter as Router,
   Switch,
@@ -10,10 +7,54 @@ import {
   Link  
 } from 'react-router-dom';
 
+import './App.css';
+import View from './components/View';
+import ContactForm from './components/ContactForm';
+import { UserProvider } from './components/UserContext';
 
-function App() {
-  return (
-    <div className="App">
+
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      // data: {}, can work too. 
+      mydata: [],
+      punkData: []
+    };
+  }
+
+
+  setPunkData() {
+    this.setState({
+      punkData: this.state.mydata.data
+    })
+
+    // console.log(this.state.punkData);
+  }
+
+
+  componentDidMount() {
+    fetch('https://api.punkapi.com/v2/beers')
+      .then((anythingone) => {
+        return anythingone.json();
+      })
+      .then((theirdata) => {
+        console.log(theirdata);
+              
+        this.setState({
+          mydata: theirdata
+        })
+
+       // this.setPunkData();
+      })
+  }
+
+  render() {
+    console.log(this.state.mydata)
+    return (
+      
+      <div className="App">
+        <UserProvider value = {this.state.mydata}>
       <Router>
       <div>
 
@@ -23,7 +64,7 @@ function App() {
           
               <Link to="/contact">*Requirements*</Link> 
            
-              <Link to="/profile">*Profile*</Link> 
+              <Link to="/view">*View*</Link> 
         
               <Link to="/signup">*Feedback*</Link> 
        
@@ -37,8 +78,8 @@ function App() {
           <Route path="/contact"> 
             <Contact />
           </Route>
-          <Route  path="/profile"> 
-            <Profile />
+          <Route  path="/view"> 
+            <View />
           </Route>
           <Route  path="/signup"> 
             <ContactForm />
@@ -50,12 +91,16 @@ function App() {
         </Switch>
       </div>
     </Router>
-    
+    </UserProvider>
     </div>
-  );
+      
+    )
+  }
 }
 
-function Home() {
+
+
+ function Home() {
   return (
   <>
     <h2>Welcome to my MOD2 W3 D2: Context API Fetch</h2>
@@ -75,21 +120,14 @@ function Contact() {
 )
 }
 
-function Profile() {
-  return (
-    <>
-    <h1>under construction</h1>
-  
-  </>
-)
-
-}
 
 function ThankYou() {
   return <h2>Your submission was received.  ThankYou!</h2>;
 }
 
-export default App;
+
+
+
 
 
 
